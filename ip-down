@@ -1,33 +1,21 @@
 #!/bin/sh
 
-#设置了child-timeout 0后，pppd会等待ip-down执行结束，但是之后，自己就不退出了，再次kill之后才会退出。
-#如果不设置child-timeout，pppd在自己退出的时候，如果发现ip-down还在执行，会kill掉ip-down,所以最终还是无法使用这个机制
-
-
 PWD=$(cd "$(dirname "$0")"; pwd)
-#SERVER=$6
 
-echo "ip-down called iface($IFNAME) server($SERVER)" >> $PWD/log
+#echo "ip-down called iface($IFNAME) server($SERVER)" >> $PWD/log
 
+# 设置pptp连接状态为off
+UP_FILE="/var/run/pptp_on"
+echo 0 > $UP_FILE
 
-#SERVER=`cat $PWD/option.pptp | grep pty | awk '{print $3}'`
-SERVER=`cat /var/run/pptp-server`
-
-rm /var/run/pptp-interface
-rm /var/run/pptp-server
-
-# 恢复之前的DNS
-cp /var/run/pptp-old-dns /etc/resolv.conf
-rm /var/run/pptp-old-dns
-
-# 更新app界面
-cp -r $PWD/not_connected.conf /var/run/pptp.conf
-APP_PID=`cat /var/run/pptp.pid`
-kill -SIGUSR1 $APP_PID
+# 更新应用界面
+SERVICE_FILE=`cat /var/run/service_location_file 2>/dev/null` 
+$SERVICE_FILE update_ui
 
 #删除pppserver的地址
 route del -net $SERVER netmask 255.255.255.255
 
+# 临时添加局域网ip地址
 route del -net 10.241.0.0 netmask 255.255.0.0 
 
 route del -net 1.0.1.0 netmask 255.255.255.0

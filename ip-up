@@ -2,12 +2,12 @@
 
 PWD=$(cd "$(dirname "$0")"; pwd)
 
+# 更改pptp连接状态为on
+UP_FILE="/var/run/pptp_on"
+echo 1 > $UP_FILE
+
+# 更新应用界面
+SERVICE_FILE=`cat /var/run/service_location_file 2>/dev/null`
+$SERVICE_FILE update_ui
+
 route add -net 0.0.0.0 netmask 0.0.0.0 $IFNAME
-
-
-
-SERVER=$6
-echo $SERVER > /var/run/pptp-server
-echo $IFNAME > /var/run/pptp-interface
-
-

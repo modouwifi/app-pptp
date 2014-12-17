@@ -1,3 +1,3 @@
-username name
-password pass
-server server
+username ayao-5bird
+password ayaoayao
+server v11.blockcn.net

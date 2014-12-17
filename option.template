@@ -5,11 +5,13 @@ noauth
 refuse-eap
 connect true
 lock
+persist
+nodetach
+holdoff 10
 maxfail 0
 lcp-echo-failure 4
 lcp-echo-interval 30
 usepeerdns
-holdoff 600
 child-timeout 360
 ipcp-accept-remote ipcp-accept-local noipdefault
 ktune

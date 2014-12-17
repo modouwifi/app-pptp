@@ -25,19 +25,16 @@ usage() {
 }
 
 start() {
-    $CURWDIR/call.sh
+    $CURWDIR/service.sh on
 }
 
 stop() {
-    $CURWDIR/poff.sh
+    $CURWDIR/service.sh off
 }
 
 run() {
-    $CURWDIR/start.sh &
+    $CURWDIR/service.sh run &
 }
-
-CONNECTED_CONF=$CURWDIR/connected.conf
-NOT_CONNECTED_CONF=$CURWDIR/not_connected.conf
 
 config() {
     echo "{" > "$PROGRAM_NAME.conf"
@@ -45,54 +42,11 @@ config() {
     echo "\"icon\" : \"$CURWDIR/$ICON\"," >> "$PROGRAM_NAME.conf"
     echo "\"iconPressed\" : \"$CURWDIR/$PRESSED_ICON\"," >> "$PROGRAM_NAME.conf"
     echo "\"exec\" : \"$CURWDIR/init run\"," >> "$PROGRAM_NAME.conf"
-#    echo "\"exec\" : \"$CUR \"," >> "$PROGRAM_NAME.conf"
     echo "\"msgNum\" : 4" >> "$PROGRAM_NAME.conf"
     echo "}" >> "$PROGRAM_NAME.conf"
 
     $INSTALL_BIN -d $LAUNCHER_CONFIG_DIR
     $INSTALL_BIN "$PROGRAM_NAME.conf" "$LAUNCHER_CONFIG_FILE"
-    
-    echo "{" > $CONNECTED_CONF
-    echo "\"title\" : \"PPTP-VPN\"," >> $CONNECTED_CONF
-    echo "\"content\" : \"已成功连接VPN,点击断开可断开vpn连接,可能会需要一些时间.\"," >> $CONNECTED_CONF
-    echo "\"button1\" : {" >> $CONNECTED_CONF
-    echo "\"txt\" : \"配置\"," >> $CONNECTED_CONF
-    echo "\"cmd\" : \"$CURWDIR/make-option.sh \"," >> $CONNECTED_CONF
-    echo "\"code\" : {" >> $CONNECTED_CONF
-    echo "\"0\" : \"配置成功\"" >> $CONNECTED_CONF
-    echo "}" >> $CONNECTED_CONF
-    echo "}," >> $CONNECTED_CONF
-
-    echo "    \"button2\" : {" >> $CONNECTED_CONF
-    echo "        \"txt\" : \"断开\"," >> $CONNECTED_CONF
-    echo "        \"cmd\" : \"$CURWDIR/poff.sh\"," >> $CONNECTED_CONF
-    echo "        \"code\" : {" >> $CONNECTED_CONF
-    echo "            \"0\" : \"断开成功\"" >> $CONNECTED_CONF
-    echo "        }" >> $CONNECTED_CONF
-    echo "   }    " >> $CONNECTED_CONF
-    echo "   }    " >> $CONNECTED_CONF
-
-
-    echo "{" > $NOT_CONNECTED_CONF
-    echo "\"title\" : \"PPTP-VPN\"," >> $NOT_CONNECTED_CONF
-    echo "\"content\" : \"点击连接可连接VPN，因为要设置策略路由，这可能需要一点时间.\"," >> $NOT_CONNECTED_CONF
-    echo "\"button1\" : {" >> $NOT_CONNECTED_CONF
-    echo "\"txt\" : \"配置\"," >> $NOT_CONNECTED_CONF
-    echo "\"cmd\" : \"$CURWDIR/make-option.sh \"," >> $NOT_CONNECTED_CONF
-    echo "\"code\" : {" >> $NOT_CONNECTED_CONF
-    echo "\"0\" : \"配置成功\"" >> $NOT_CONNECTED_CONF
-    echo "}" >> $NOT_CONNECTED_CONF
-    echo "}," >> $NOT_CONNECTED_CONF
-
-    echo "    \"button2\" : {" >> $NOT_CONNECTED_CONF
-    echo "        \"txt\" : \"连接\"," >> $NOT_CONNECTED_CONF
-    echo "        \"cmd\" : \"$CURWDIR/call.sh\"," >> $NOT_CONNECTED_CONF
-    echo "        \"code\" : {" >> $NOT_CONNECTED_CONF
-    echo "            \"0\" : \"连接成功\"" >> $NOT_CONNECTED_CONF
-    echo "        }" >> $NOT_CONNECTED_CONF
-    echo "   }    " >> $NOT_CONNECTED_CONF
-    echo "   }    " >> $NOT_CONNECTED_CONF
-
 }
 
 uninstall() {

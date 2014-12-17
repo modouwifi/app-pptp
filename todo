@@ -1,7 +1,0 @@
-没有配置接口，应该有一条命令生成配置文件
-call.sh中应该有关于server 等信息的自动获取
-拨号失败的处理
-pppoe拨号下还有问题
-做到应用规范里
-
- ip11=`nslookup v7.blockcn.net | awk 'NR==5 { print $3 }'` 
