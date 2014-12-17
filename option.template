@@ -1,0 +1,21 @@
+nodeflate
+nobsdcomp
+require-mppe-128
+noauth
+refuse-eap
+connect true
+lock
+maxfail 0
+lcp-echo-failure 4
+lcp-echo-interval 30
+usepeerdns
+holdoff 600
+child-timeout 360
+ipcp-accept-remote ipcp-accept-local noipdefault
+ktune
+default-asyncmap nopcomp noaccomp
+novj nobsdcomp nodeflate
+lcp-echo-interval 10
+lcp-echo-failure 6
+unit 0
+defaultroute
