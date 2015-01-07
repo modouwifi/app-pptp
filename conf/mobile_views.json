@@ -1,0 +1,87 @@
+{
+    "main_page" : {
+      "id" : "main_page",
+      "name" : "VPN-PPTP",
+      "type" : "main",
+      "data" : {
+        "state" : {
+          "id" : "state",
+          "access" : "RO"
+        },
+        "user" : {
+          "id" : "user",
+          "access" : "RO"
+        },
+        "pass" : {
+          "id" : "pass",
+          "access" : "RO"
+        },
+        "server" : {
+          "id" : "server",
+          "access" : "RO"
+        }
+      },
+      "menu" : {
+        "1" : {
+          "index" : 1,
+          "text" : "开启服务",
+          "type" : "COMMAND",
+          "action" : "start",
+          "input" : "params"
+        },
+        "2" : {
+          "index" : 2,
+          "text" : "服务控制",
+          "type" : "MENU",
+          "items" : {
+            "1" : {
+              "index" : 1,
+              "text" : "开启服务",
+              "type" : "COMMAND",
+              "action" : "start",
+              "input" : "params"
+            },
+            "2" : {
+              "index" : 2,
+              "text" : "关闭服务",
+              "type" : "COMMAND",
+              "action" : "stop",
+              "input" : "params"
+            },
+            "3" : {
+              "index" : 3,
+              "text" : "配置账号",
+              "type" : "VIEW",
+              "viewid" : "setting"
+            }
+          }
+        },
+        "3" : {
+          "index" : 3,
+          "text" : "配置账号",
+          "type" : "VIEW",
+          "viewid" : "setting"
+        }
+      }
+    },
+    "setting" : {
+      "id" : "setting",
+      "name" : "配置账号",
+      "type" : "sub",
+      "data" : {
+          "user" : {
+          "id" : "user",
+          "access" : "RW"
+        },
+        "pass" : {
+          "id" : "pass",
+          "access" : "RW"
+        },
+        "server" : {
+          "id" : "server",
+          "access" : "RW"
+        }
+      }
+    }
+ }
+

@@ -1,0 +1,15 @@
+{
+    "start" : {
+      "id" : "start",
+      "is_sync" : false,
+      "cmd"   : "./init start",
+      "relative": true
+    },
+    "stop" : {
+      "id" : "stop",
+      "is_sync" : false,
+      "cmd"   : "./init stop",
+      "relative": true
+    }
+ }
+

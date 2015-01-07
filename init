@@ -1,10 +1,11 @@
 #!/bin/sh
 
 CURWDIR="$(cd $(dirname $0) && pwd)"
+ROOT=$CURWDIR
 TITLE="PPTP-VPN"
 PROGRAM_NAME="app-pptp"
-START_SHELL="/system/apps/tp/bin/start.sh"
-CUSTOM_CONFIG_FILE="$CURWDIR/connected.conf"
+
+PACKAGE="com.modouwifi.app-pptp"
 
 APPS_CONFIG_DIR="/data/conf"
 LAUNCHER_CONFIG_DIR="$APPS_CONFIG_DIR/launcher/conf.d"
@@ -12,6 +13,14 @@ LAUNCHER_CONFIG_FILE="$LAUNCHER_CONFIG_DIR/$PROGRAM_NAME.conf"
 
 ICON="./res/normal.png"
 PRESSED_ICON="./res/pressed.png"
+SERVICE="$CURWDIR/sbin/service.sh"
+
+OPTION_PPTP="$ROOT/data/option.pptp"
+OPTION_USER="$ROOT/data/option.user"
+OPTION_CONF="$ROOT/conf/option.conf"
+PPTP_SO="$ROOT/bin/pptp.so"
+TEMPLATE="$ROOT/conf/option.template"
+DATA_JSON="$ROOT/conf/data.json"
 
 PID_FILE="$CURWDIR/$PROGRAM_NAME.pid"
 PKILL_BIN="/usr/bin/pkill"
@@ -25,18 +34,76 @@ usage() {
 }
 
 start() {
-    $CURWDIR/service.sh on
+    $SERVICE on
+    appInfo.sh set_status $PACKAGE ISRUNNING
+    json4sh.sh set $DATA_JSON state value true
 }
 
 stop() {
-    $CURWDIR/service.sh off
+    $SERVICE off
+    appInfo.sh set_status $PACKAGE NOTRUNNING
+    json4sh.sh set $DATA_JSON state value false
 }
 
 run() {
-    $CURWDIR/service.sh run &
+    $SERVICE run &
 }
 
-config() {
+sync_datajson_2_option_user() {
+    local SERVER=`json4sh.sh get $DATA_JSON server value`
+    local USERNAME=`json4sh.sh get $DATA_JSON user value`
+    local PASSWORD=`json4sh.sh get $DATA_JSON pass value`
+
+    rm $OPTION_USER
+    echo $SERVER > $OPTION_USER
+    echo $USERNAME >> $OPTION_USER
+    echo $PASSWORD >> $OPTION_USER
+}
+
+sync_option_user_2_datajson() {
+    local SERVER=`cat $OPTION_USER | head -n 1`
+    local USERNAME=`cat $OPTION_USER | head -n 2 | tail -n 1`
+    local PASSWORD=`cat $OPTION_USER | tail -n 1`
+
+    json4sh.sh set $DATA_JSON server value $SERVER
+    json4sh.sh set $DATA_JSON user value $USERNAME
+    json4sh.sh set $DATA_JSON pass value $PASSWORD
+}
+
+sync_option_user_2_option_pptp() {
+    local SERVER=`cat $OPTION_USER | head -n 1`
+    local USERNAME=`cat $OPTION_USER | head -n 2 | tail -n 1`
+    local PASSWORD=`cat $OPTION_USER | tail -n 1`
+
+    rm $OPTION_PPTP
+
+    echo "plugin $PPTP_SO" > $OPTION_PPTP
+    cat $TEMPLATE >> $OPTION_PPTP
+    echo -e "\n" >> $OPTION_PPTP
+
+    echo "user \"$USERNAME\"" >> $OPTION_PPTP
+    echo "password \"$PASSWORD\"" >> $OPTION_PPTP
+    echo "pptp_server $SERVER" >> $OPTION_PPTP
+}
+
+tp_config() {
+    generate-config-file-2 $OPTION_CONF $OPTION_USER
+    if [ $? != 0 ]; then
+        exit 1
+    fi
+    
+    sync_option_user_2_datajson ;
+    sync_option_user_2_option_pptp ;
+}
+
+set_config() {
+    sync_datajson_2_option_user ;
+    sync_option_user_2_option_pptp ;
+
+    local STATUS=`appInfo.sh get_status $PACKAGE`
+}
+
+install() {
     echo "{" > "$PROGRAM_NAME.conf"
     echo "\"name\" :  \"$TITLE\"," >> "$PROGRAM_NAME.conf"
     echo "\"icon\" : \"$CURWDIR/$ICON\"," >> "$PROGRAM_NAME.conf"
@@ -47,6 +114,9 @@ config() {
 
     $INSTALL_BIN -d $LAUNCHER_CONFIG_DIR
     $INSTALL_BIN "$PROGRAM_NAME.conf" "$LAUNCHER_CONFIG_FILE"
+
+    sync_option_user_2_datajson ;
+    sync_option_user_2_option_pptp ;
 }
 
 uninstall() {
@@ -68,11 +138,15 @@ case "$1" in
         start
         stop;;
     "install" )
-        config;;
+        install;;
     "uninstall" )
         uninstall;;
     "run" )
         run;;
+    "set_config" )
+        set_config;;
+    "tp_config" )
+        tp_config;;
     * )
         usage ;;
 esac

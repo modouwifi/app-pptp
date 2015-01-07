@@ -1,10 +1,8 @@
 nodeflate
 nobsdcomp
-require-mppe-128
+mppe required,no40,no56,stateless
 noauth
 refuse-eap
-connect true
-lock
 persist
 nodetach
 holdoff 10
@@ -21,3 +19,4 @@ lcp-echo-interval 10
 lcp-echo-failure 6
 unit 0
 defaultroute
+mtu 1400

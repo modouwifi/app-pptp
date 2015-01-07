@@ -1,0 +1,17 @@
+{
+        "widgets":
+        [
+                {
+                        "id": "server"
+                        "access" : "RW"
+                },
+                {
+                        "id" : "user",
+                        "access" : "RW"
+                },
+                {
+                        "id" : "pass",
+                        "access" : "RW"
+                }
+        ]
+}

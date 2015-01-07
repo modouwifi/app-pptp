@@ -1,0 +1,48 @@
+{
+    "state" :
+    {
+        "id" : "state",
+        "name" : "开启",
+        "value" : false,
+        "type" : 
+        {
+                "class" : "BOOL"
+        }
+    },
+    "user" :
+    {
+      "id" : "user",
+      "name" : "用户名",
+      "value" : "",
+      "type" : 
+      {
+        "class" : "STRING",
+        "min" : 1,
+        "max" : 30
+      }     
+    },
+    "pass" :
+    {
+        "id" : "pass",
+        "name" : "密码",
+        "value" : "",
+        "type" : 
+        {
+                "class" : "PASSWORD",
+                "min" : 1,
+                "max" : 30
+        }
+    },
+    "server" :
+    {
+        "id" : "server",
+        "name" : "服务器",
+        "value" : "",
+        "type" : 
+        {
+                "class" : "STRING",
+                "min" : 1,
+                "max" : 30
+        }
+    }
+}

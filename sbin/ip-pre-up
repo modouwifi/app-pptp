@@ -1,7 +1,5 @@
 #!/bin/sh
 
-PWD=$(cd "$(dirname "$0")"; pwd)
-
 SERVER=$6
 
 #GATE_WAY=`route -n | awk '$1=="0.0.0.0"{print $2}'`
@@ -11,19 +9,14 @@ GW=`route -n | awk '$1=="0.0.0.0" {print $2}' | head -1`
 IFACE=`route -n | awk '$1=="0.0.0.0" {print $8}' | head -1`
 #GW_AND_IFACE=`route -n | awk '$1=="0.0.0.0" {print $2" "$8}' | head -1`
 
-
 #GW=`echo $OLDGW | awk '{print $1}'`
+iptables -t nat -A POSTROUTING -o $IFNAME -j MASQUERADE
 if [ $GW == "0.0.0.0" ]; then
     OLD="dev $IFACE"
-    iptables -t nat -A POSTROUTING -o $IFNAME -j MASQUERADE
+    #iptables -t nat -A POSTROUTING -o $IFNAME -j MASQUERADE
 else
     OLD="gw $GW $IFACE"
 fi
-
-
-
-#SERVER=`cat /var/run/pptp-server`
-#echo "ip-pre-up called iface($IFNAME)" >> $PWD/log
 
 #添加pppserver的地址
 route add -net $SERVER netmask 255.255.255.255  $OLD

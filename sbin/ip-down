@@ -1,9 +1,5 @@
 #!/bin/sh
 
-PWD=$(cd "$(dirname "$0")"; pwd)
-
-#echo "ip-down called iface($IFNAME) server($SERVER)" >> $PWD/log
-
 # 设置pptp连接状态为off
 UP_FILE="/var/run/pptp_on"
 echo 0 > $UP_FILE

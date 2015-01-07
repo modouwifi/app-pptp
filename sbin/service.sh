@@ -1,6 +1,7 @@
 #!/bin/sh
 
 PWD=$(cd "$(dirname "$0")"; pwd)
+ROOT="$PWD/.."
 
 VAR_CONF_FILE="/var/run/pptp.conf"
 CUSTOM_PID_FILE="/var/run/pptp_custom"
@@ -9,11 +10,19 @@ UP_FILE="/var/run/pptp_on"
 PPPD_PID_FILE="/var/run/pptp_pppd.pid"
 SERVICE_LOCATION_FILE="/var/run/service_location_file"
 
-ON_UP_CONF="$PWD/auto_on_up.conf"
-ON_DOWN_CONF="$PWD/auto_on_down.conf"
-OFF_CONF="$PWD/auto_off.conf"
-SERVICE_FILE="$PWD/service.sh"
+ON_UP_CONF="$ROOT/conf/auto_on_up.conf"
+ON_DOWN_CONF="$ROOT/conf/auto_on_down.conf"
+OFF_CONF="$ROOT/conf/auto_off.conf"
+SERVICE_FILE="$ROOT/sbin/service.sh"
 
+IP_PRE_UP="$ROOT/sbin/ip-pre-up"
+IP_DOWN="$ROOT/sbin/ip-down"
+IP_UP="$ROOT/sbin/ip-up"
+
+OPTION_PPTP="$ROOT/data/option.pptp"
+OPTION_USER="$ROOT/data/option.user"
+TEMPLATE="$ROOT/conf/option.template"
+OPTION_CONF="$ROOT/conf/option.conf"
 
 update_conf() {
     local auto=`cat $AUTO_CONN_FILE 2>/dev/null`
@@ -31,18 +40,9 @@ update_conf() {
 }
 
 
-#if [ "$STATE" == "1" ] ; then
-#    cp -r $PWD/connected.conf /var/run/pptp.conf
-#    APP_PID=`cat /var/run/pptp.pid`
-#    kill -SIGUSR1 $APP_PID
-#else    
-#    $PWD/poff.sh
-#    messagebox PPTP-VPN "" 1 确定 ""
-#fi
-
 run() {
     update_conf ;
-    custom $VAR_CONF_FILE $PWD &
+    custom $VAR_CONF_FILE $ROOT &
     echo $! > $CUSTOM_PID_FILE
 }
 
@@ -54,7 +54,7 @@ update_ui() {
 
 enable_auto_conn() {
     # 检测是否已经有VPN拨号配置
-    if [ ! -f $PWD/option.pptp ]; then
+    if [ ! -f $OPTION_PPTP ]; then
         messagebox PPTP-VPN 请先配置vpn信息 1 确定 ""
         exit 1
     fi
@@ -65,18 +65,19 @@ enable_auto_conn() {
     # 添加拨号的hook脚本
     rm -rf /etc/ppp
     mkdir /etc/ppp
-    cp $PWD/ip-pre-up /etc/ppp/ip-pre-up
-    cp $PWD/ip-down /etc/ppp/ip-down
-    cp $PWD/ip-up /etc/ppp/ip-up
+    cp $IP_PRE_UP /etc/ppp/ip-pre-up
+    cp $IP_DOWN /etc/ppp/ip-down
+    cp $IP_UP /etc/ppp/ip-up
 
     # 保存之前的DNS
     cp /etc/resolv.conf /var/run/pptp-old-dns
     
     # 查询IP
-    SERVER=`cat $PWD/option.pptp | grep "pty" | awk '{print $3}'`
-    SERVER_IP=`nslookup $SERVER | awk 'NR==5 { print $3 }'`
+    #SERVER=`cat $PWD/option.pptp | grep "pty" | awk '{print $3}'`
+    local SERVER=`cat $OPTION_PPTP | grep "pptp_server" | awk '{print $2}'`
+    local SERVER_IP=`nslookup $SERVER | awk 'NR==5 { print $3 }'`
 
-    pppd file "$PWD/option.pptp" ipparam $SERVER_IP &
+    pppd file "$OPTION_PPTP" ipparam $SERVER_IP &
     echo $! > $PPPD_PID_FILE
 
     echo 1 > $AUTO_CONN_FILE
@@ -85,7 +86,6 @@ enable_auto_conn() {
 
 disable_auto_conn() {
     kill `cat $PPPD_PID_FILE`
-    killall pptp
 
     echo 0 > $AUTO_CONN_FILE
     update_ui ;
@@ -93,6 +93,12 @@ disable_auto_conn() {
     # 恢复之前的DNS
     cp /var/run/pptp-old-dns /etc/resolv.conf
 }
+
+
+
+
+
+
 
 usage() {
     echo "ERROR: action missing"

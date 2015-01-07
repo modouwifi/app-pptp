@@ -1,7 +1,5 @@
 #!/bin/sh
 
-PWD=$(cd "$(dirname "$0")"; pwd)
-
 # 更改pptp连接状态为on
 UP_FILE="/var/run/pptp_on"
 echo 1 > $UP_FILE
