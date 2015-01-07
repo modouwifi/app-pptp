@@ -5,11 +5,11 @@
         "author"          : "拖鞋",
         "author_mail"     : "sky_wanderer@163.com",
         "homepage"        : "www.modouwifi.com",
-        "version"         : "0.4.1",
+        "version"         : "0.4.3",
         "release_date"    : "2015.1.7",
         "icon"            : "./res/normal.png",
         "location"        : "internal",
         "description"     : "输入VPN（PPTP）帐号密码以及server地址，即可一键连接vpn",
         "instruction"     : "在配置中输入帐号密码和server地址，点击连接",
-        "os_version"      : "1.1.27"
+        "os_version"      : "1.1.26"
 }
