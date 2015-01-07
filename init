@@ -87,7 +87,7 @@ sync_option_user_2_option_pptp() {
 }
 
 tp_config() {
-    generate-config-file-2 $OPTION_CONF $OPTION_USER
+    $ROOT/bin/generate-config-file-2 $OPTION_CONF $OPTION_USER
     if [ $? != 0 ]; then
         exit 1
     fi
