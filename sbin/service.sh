@@ -70,7 +70,7 @@ enable_auto_conn() {
     cp $IP_UP /etc/ppp/ip-up
 
     # 保存之前的DNS
-    cp /etc/resolv.conf /var/run/pptp-old-dns
+    cp /etc/resolv.conf /var/run/pptp-old-dns    
     
     # 查询IP
     #SERVER=`cat $PWD/option.pptp | grep "pty" | awk '{print $3}'`
@@ -90,8 +90,10 @@ disable_auto_conn() {
     echo 0 > $AUTO_CONN_FILE
     update_ui ;
 
+    
+
     # 恢复之前的DNS
-    cp /var/run/pptp-old-dns /etc/resolv.conf
+    #cp /var/run/pptp-old-dns /etc/resolv.conf
 }
 
 

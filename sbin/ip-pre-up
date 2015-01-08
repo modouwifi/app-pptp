@@ -21,7 +21,7 @@ fi
 #添加pppserver的地址
 route add -net $SERVER netmask 255.255.255.255  $OLD
 
-route add -net 10.0.0.0 netmask 255.255.255.0  $OLD
+route add -net 10.0.0.0 netmask 255.0.0.0  $OLD
 route add -net 172.16.0.0 netmask 255.255.0.0  $OLD
 route add -net 172.17.0.0 netmask 255.255.0.0  $OLD
 route add -net 172.18.0.0 netmask 255.255.0.0  $OLD

@@ -8,6 +8,10 @@ echo 0 > $UP_FILE
 SERVICE_FILE=`cat /var/run/service_location_file 2>/dev/null` 
 $SERVICE_FILE update_ui
 
+# 恢复之前的DNS
+local resolv=`readlink -f /etc/resolv.conf`
+cp /var/run/pptp-old-dns /$resolv
+
 #删除pppserver的地址
 route del -net $SERVER netmask 255.255.255.255
 
@@ -15,7 +19,7 @@ route del -net $SERVER netmask 255.255.255.255
 route del -net 10.241.0.0 netmask 255.255.0.0 
 
 
-route del -net 10.0.0.0 netmask 255.255.255.0 
+route del -net 10.0.0.0 netmask 255.0.0.0 
 route del -net 172.16.0.0 netmask 255.255.0.0 
 route del -net 172.17.0.0 netmask 255.255.0.0 
 route del -net 172.18.0.0 netmask 255.255.0.0 

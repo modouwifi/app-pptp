@@ -8,4 +8,6 @@ echo 1 > $UP_FILE
 SERVICE_FILE=`cat /var/run/service_location_file 2>/dev/null`
 $SERVICE_FILE update_ui
 
+echo "nameserver 8.8.8.8" > /etc/resolv.conf 
+
 route add -net 0.0.0.0 netmask 0.0.0.0 $IFNAME
