@@ -1,5 +1,9 @@
 #!/bin/sh
 
+local dns=`cat /etc/resolv.conf`
+local resolv_file=`ls -l /etc/resolv.conf`
+logger -t app-pptp "ip-down start executing, dns=$dns, resolv_file=$resolv_file"
+
 # 设置pptp连接状态为off
 UP_FILE="/var/run/pptp_on"
 echo 0 > $UP_FILE
@@ -11,6 +15,11 @@ $SERVICE_FILE update_ui
 # 恢复之前的DNS
 local resolv=`readlink -f /etc/resolv.conf`
 cp /var/run/pptp-old-dns /$resolv
+rm /var/dont_change_dns
+
+dns=`cat /etc/resolv.conf`
+resolv_file=`ls -l /etc/resolv.conf`
+logger -t app-pptp "after recover dns, dns=$dns, resolv_file=$resolv_file"
 
 #删除pppserver的地址
 route del -net $SERVER netmask 255.255.255.255
