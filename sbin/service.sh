@@ -8,7 +8,9 @@ CUSTOM_PID_FILE="/var/run/pptp_custom"
 AUTO_CONN_FILE="/var/run/pptp_auto"
 UP_FILE="/var/run/pptp_on"
 PPPD_PID_FILE="/var/run/pptp_pppd.pid"
+NOTIFYD_PID_FILE="/var/run/pptp_notifyd_pid"
 SERVICE_LOCATION_FILE="/var/run/service_location_file"
+
 
 ON_UP_CONF="$ROOT/conf/auto_on_up.conf"
 ON_DOWN_CONF="$ROOT/conf/auto_on_down.conf"
@@ -69,9 +71,6 @@ enable_auto_conn() {
     cp $IP_DOWN /etc/ppp/ip-down
     cp $IP_UP /etc/ppp/ip-up
 
-    # 保存之前的DNS
-    #cp /etc/resolv.conf /var/run/pptp-old-dns    
-    
     # 查询IP
     #SERVER=`cat $PWD/option.pptp | grep "pty" | awk '{print $3}'`
     local SERVER=`cat $OPTION_PPTP | grep "pptp_server" | awk '{print $2}'`
@@ -89,17 +88,18 @@ disable_auto_conn() {
 
     echo 0 > $AUTO_CONN_FILE
     update_ui ;
-
-    
-
-    # 恢复之前的DNS
-    #cp /var/run/pptp-old-dns /etc/resolv.conf
 }
 
 
+persist_dns() {
+    inotifyd "$PWD/dns_change_trigger.sh" /etc/resolv.conf:w &
+    echo $! > $NOTIFYD_PID_FILE
+}
 
-
-
+stop_persist_dns() {
+    local pid=`cat $NOTIFYD_PID_FILE`
+    kill $pid
+}
 
 
 usage() {
@@ -122,6 +122,10 @@ case "$1" in
         run;;
     "update_ui" )
         update_ui;;
+    "persist_dns" )
+        persist_dns;;
+    "stop_persist_dns" )
+        stop_persist_dns;;
     * )
         usage ;;
 esac

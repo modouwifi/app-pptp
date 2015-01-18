@@ -13,13 +13,26 @@ SERVICE_FILE=`cat /var/run/service_location_file 2>/dev/null`
 $SERVICE_FILE update_ui
 
 # 恢复之前的DNS
+#uci delete network.wan.dynamic_dns
+#uci rename network.wan.dns_backup=dynamic_dns
+#uci commit network
+#/etc/init.d/network reload
+
+#local resolv=`readlink -f /etc/resolv.conf`
+#cp /var/run/pptp-old-dns /$resolv
+
+# 设置dns标志位为可以改变
+#rm /var/dont_change_dns
+
+#dns=`cat /etc/resolv.conf`
+#resolv_file=`ls -l /etc/resolv.conf`
+#logger -t app-pptp "after recover dns, dns=$dns, resolv_file=$resolv_file"
+
+# 恢复dns
+logger -t app-pptp "recovery old dns, stop watch on dns"
+$SERVICE_FILE stop_persist_dns
 local resolv=`readlink -f /etc/resolv.conf`
 cp /var/run/pptp-old-dns /$resolv
-rm /var/dont_change_dns
-
-dns=`cat /etc/resolv.conf`
-resolv_file=`ls -l /etc/resolv.conf`
-logger -t app-pptp "after recover dns, dns=$dns, resolv_file=$resolv_file"
 
 #删除pppserver的地址
 route del -net $SERVER netmask 255.255.255.255

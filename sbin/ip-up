@@ -10,12 +10,35 @@ echo 1 > $UP_FILE
 SERVICE_FILE=`cat /var/run/service_location_file 2>/dev/null`
 $SERVICE_FILE update_ui
 
-touch /var/dont_change_dns
+SERVICE_PATH=`dirname $SERVICE_FILE`
+RESOLV="$SERVICE_PATH\..\conf\resolv.conf"
+
+# 保存之前的DNS
+#uci rename network.wan.dynamic_dns=dns_backup
+#logger -t app-pptp "backup dns to network.wan.dns_backup"
+
+# 设置DNS不变(dhcp过期时，系统续约时会再次使用dhcp得到的DNS，此处设置标志位，标志不再改变DNS)
+#touch /var/dont_change_dns
+
+#local resolv=`readlink -f /etc/resolv.conf`
+#echo "nameserver 8.8.8.8" > $resolv
+
+#uci set network.wan.dynamic_dns=""
+#uci add_list network.wan.dynamic_dns="8.8.8.8"
+#uci add_list network.wan.dynamic_dns="8.8.4.4"
+#uci commit network
+#/etc/init.d/network reload
+
+#logger -t app-pptp "change dns to 8.8.8.8 8.8.4.4"
+
+# 保存DNS
+logger -t app-pptp "backup old dns, change dns to 8.8.8.8, watch on dns change"
 
 local resolv=`readlink -f /etc/resolv.conf`
-echo "nameserver 8.8.8.8" > $resolv
+cp 
+#echo "nameserver 8.8.8.8" > $resolv
+cp -f $RESOLV /etc/resolv.conf
 
-logger -t app-pptp "change dns to 8.8.8.8"
-
+$SERVICE_FILE persist_dns
 
 route add -net 0.0.0.0 netmask 0.0.0.0 $IFNAME

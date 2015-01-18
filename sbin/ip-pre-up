@@ -12,7 +12,6 @@ IFACE=`route -n | awk '$1=="0.0.0.0" {print $8}' | head -1`
 
 # 保存之前的DNS
 cp /etc/resolv.conf /var/run/pptp-old-dns
-
 logger -t app-pptp "backup dns to /var/run/pptp-old-dns"
 
 #GW=`echo $OLDGW | awk '{print $1}'`
